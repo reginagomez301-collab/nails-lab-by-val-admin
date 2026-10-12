@@ -165,9 +165,14 @@ let recuperacionAutorizada = false;
 
 supabaseClient.auth.onAuthStateChange((evento) => {
   if (evento === "PASSWORD_RECOVERY") {
-    recuperacionAutorizada = true;
-    formulario.style.display = "block";
+  recuperacionAutorizada = true;
+  formulario.style.display = "block";
+
+  const aviso = document.querySelector(".status");
+  if (aviso) {
+    aviso.style.display = "none";
   }
+}
 });
 
 boton.addEventListener("click", async () => {
