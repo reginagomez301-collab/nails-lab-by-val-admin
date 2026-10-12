@@ -75,9 +75,86 @@
       Aquí podrás consultar, confirmar y rechazar
       las solicitudes de tus clientas.
     </p>
+    <div id="recuperar-contrasena" style="display:none; margin-top:24px;">
+  <h2 style="font-size:21px; font-weight:normal;">
+    Crea tu contraseña ♡
+  </h2>
+
+  <input
+    id="nueva-contrasena"
+    type="password"
+    placeholder="Nueva contraseña"
+    autocomplete="new-password"
+    minlength="8"
+    style="width:100%; padding:14px; margin:12px 0;
+           border:1px solid #eadbd5; border-radius:10px;"
+  >
+
+  <button
+    id="guardar-contrasena"
+    type="button"
+    style="width:100%; padding:14px; background:#b8848c;
+           color:white; border:0; border-radius:10px;"
+  >
+    Guardar contraseña
+  </button>
+
+  <p id="mensaje-contrasena" role="status"></p>
+</div>
     <div class="status">
       Estamos preparando tu acceso privado ♡
     </div>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseClient = window.supabase.createClient(
+    "https://skahboxofhstnynqdfak.supabase.co",
+    "sb_publishable_8spsZ0KF2rTbVUOb6MOtMg__wPQwRYN"
+  );
+  const formulario = document.getElementById("recuperar-contrasena");
+const boton = document.getElementById("guardar-contrasena");
+const mensaje = document.getElementById("mensaje-contrasena");
+
+let recuperacionAutorizada = false;
+
+supabaseClient.auth.onAuthStateChange((evento) => {
+  if (evento === "PASSWORD_RECOVERY") {
+    recuperacionAutorizada = true;
+    formulario.style.display = "block";
+  }
+});
+
+boton.addEventListener("click", async () => {
+  if (!recuperacionAutorizada) {
+    mensaje.textContent = "Abre el enlace de recuperación de tu correo.";
+    return;
+  }
+
+  const nuevaContrasena = document.getElementById("nueva-contrasena").value;
+
+  if (nuevaContrasena.length < 8) {
+    mensaje.textContent = "La contraseña debe tener al menos 8 caracteres.";
+    return;
+  }
+
+  boton.disabled = true;
+  mensaje.textContent = "Guardando contraseña...";
+
+  const { error } = await supabaseClient.auth.updateUser({
+    password: nuevaContrasena
+  });
+
+  boton.disabled = false;
+
+  if (error) {
+    mensaje.textContent = "No se pudo guardar: " + error.message;
+  } else {
+    mensaje.textContent = "¡Contraseña creada correctamente! ♡";
+    document.getElementById("nueva-contrasena").value = "";
+    recuperacionAutorizada = false;
+    await supabaseClient.auth.signOut();
+  }
+});
+</script>
 </body>
 </html>
