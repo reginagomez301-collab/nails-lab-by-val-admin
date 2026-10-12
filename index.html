@@ -75,6 +75,43 @@
       Aquí podrás consultar, confirmar y rechazar
       las solicitudes de tus clientas.
     </p>
+    <section id="inicio-sesion" style="margin-top:25px;">
+
+  <h2 style="font-size:22px; font-weight:normal;">
+    Iniciar sesión ♡
+  </h2>
+
+  <input
+    id="correo-login"
+    type="email"
+    placeholder="Correo electrónico"
+    autocomplete="email"
+    style="width:100%; padding:14px; margin:8px 0;
+           border:1px solid #eadbd5; border-radius:10px;"
+  >
+
+  <input
+    id="contrasena-login"
+    type="password"
+    placeholder="Contraseña"
+    autocomplete="current-password"
+    style="width:100%; padding:14px; margin:8px 0;
+           border:1px solid #eadbd5; border-radius:10px;"
+  >
+
+  <button
+    id="boton-login"
+    type="button"
+    style="width:100%; padding:14px; margin-top:12px;
+           background:#b8848c; color:white;
+           border:0; border-radius:10px;"
+  >
+    Entrar a mi panel ♡
+  </button>
+
+  <p id="mensaje-login" role="status"></p>
+
+</section>
     <div id="recuperar-contrasena" style="display:none; margin-top:24px;">
   <h2 style="font-size:21px; font-weight:normal;">
     Crea tu contraseña ♡
@@ -158,6 +195,35 @@
     "sb_publishable_8spsZ0KF2rTbVUOb6MOtMg__wPQwRYN"
   );
  
+  const botonLogin = document.getElementById("boton-login");
+const mensajeLogin = document.getElementById("mensaje-login");
+
+botonLogin.addEventListener("click", async () => {
+  const email = document.getElementById("correo-login").value.trim();
+  const password = document.getElementById("contrasena-login").value;
+
+  if (!email || !password) {
+    mensajeLogin.textContent = "Escribe tu correo y contraseña ♡";
+    return;
+  }
+
+  botonLogin.disabled = true;
+  mensajeLogin.textContent = "Verificando acceso...";
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  botonLogin.disabled = false;
+
+  if (error) {
+    mensajeLogin.textContent = "No pudimos iniciar sesión. Revisa tus datos.";
+  } else {
+    mensajeLogin.textContent = "¡Inicio de sesión correcto! ♡";
+    document.getElementById("contrasena-login").value = "";
+  }
+});
   const formulario = document.getElementById("recuperar-contrasena");
 const boton = document.getElementById("guardar-contrasena");
 const mensaje = document.getElementById("mensaje-contrasena");
